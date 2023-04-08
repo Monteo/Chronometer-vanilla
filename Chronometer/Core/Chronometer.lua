@@ -596,6 +596,7 @@ function Chronometer:OnEnable()
 	self:Hook("UseAction")
 	self:Hook("CastSpell")
 	self:Hook("CastSpellByName")
+	self:Hook("cast")
 	self:Hook("SpellTargetUnit")
 	self:Hook("TargetUnit")
 	self:Hook("SpellStopTargeting")
@@ -1010,6 +1011,7 @@ function Chronometer:CastSpellOnUnit(spell, unit)
 	end
 	
 	CastSpellByName(spell)
+	cast(spell)
 
 	if restore then
 		TargetLastTarget()
@@ -1233,6 +1235,15 @@ function Chronometer:CastSpellByName(text, onself)
 		self:CatchSpellcast(timer, name, rank, oneself)
 	end
 	return self.hooks["CastSpellByName"](text, onself)
+end
+
+function Chronometer:cast(text, onself)
+	local name, _, _, _, rank = self.spellcache:GetSpellData(text, nil)
+	local timer = self.timers[Chronometer.SPELL][name]
+	if timer then
+		self:CatchSpellcast(timer, name, rank, oneself)
+	end
+	return self.hooks["cast"](text, onself)
 end
 
 function Chronometer:CatchSpellcast(timer, name, rank, onself)
